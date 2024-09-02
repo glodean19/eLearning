@@ -28,7 +28,7 @@ DEBUG = False
 
 # ALLOWED_HOSTS defines a list of host/domain names that this Django site can serve.
 ALLOWED_HOSTS = ['localhost',
-                 '127.0.0.1',]
+                 '34.196.116.115',]
 
 
 # Application definition
