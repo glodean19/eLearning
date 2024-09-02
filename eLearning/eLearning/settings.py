@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8ew#k7)w!!sme473-+efo0xqdk5zssfh5hquch95wloty=0h@+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS defines a list of host/domain names that this Django site can serve.
 ALLOWED_HOSTS = ['localhost',
