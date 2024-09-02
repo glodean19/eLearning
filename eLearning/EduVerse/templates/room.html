@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 static crispy_forms_tags %}
+{% block title %}Chat Room{% endblock %}
+
+{% block content %}
+<!-- Chat room from the student/course side -->
+<div class="chat-container">
+    <div class="header-container">
+        <div class="title-container">
+            <h2 id="chat-room-name">{{ course.course_name }}</h2>
+            <input type="hidden" id="room-id" value="{{ room_id }}">
+        </div>
+    </div>
+    {% include 'chat.html' %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'JS/chat.js' %}"></script>
+{% endblock %}

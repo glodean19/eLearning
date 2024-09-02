@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 static crispy_forms_tags %}
+{% block title %}Welcome to EduVerse{% endblock %}
+
+{% block navbar_items %}
+<!-- Login with email and password -->
+<div class="d-flex flex-column ms-auto">
+    <form class="d-flex mb-2 login-form" method="post" action="{% url 'index' %}">
+        {% csrf_token %}
+        <input type="email" id="username" name="username" class="form-control me-2" placeholder="Email" required>
+        <input type="password" id="password" name="password" class="form-control me-2" placeholder="Password" required>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <!-- Register new user -->
+    <div class="text-center mt-3">
+        <p>Don't have an account? <a href="{% url 'registration' %}">Register here</a></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container d-flex flex-column justify-content-center align-items-center">
+    <div class="logo text-center">
+        <h2>Welcome to EduVerse</h2>
+        <p>Your platform for e-learning excellence.</p>
+    </div>
+    <div class="background-image-div w-100"></div>
+</div>
+{% endblock %}

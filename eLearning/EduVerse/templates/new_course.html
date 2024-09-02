@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 static crispy_forms_tags %}
+{% block title %}Create Course{% endblock %}
+
+{% block navbar_items %}
+<li class="nav-item">
+    <a class="nav-link" href="#">Logout</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Create a new course</h1>
+    <!-- Form to create a new course -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary">Create Course</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 static crispy_forms_tags %}
+
+{% block title %}{{ course.course_name }}{% endblock %}
+
+{% block navbar_items %}
+{% if student %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'student_home' student.pk %}">{{ student.user.get_full_name }}</a>
+    </li>
+{% endif %}
+<li class="nav-item">
+    <a class="nav-link" href="#">Logout</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<!-- Main content -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 col-sm-12">
+            <!-- Course Info -->
+            <div class="mb-5">
+                <h1 class="mb-4">{{ course.course_name }}</h1>
+                <p><strong>Start Date:</strong> {{ course.course_start_date }}</p>
+                <p><strong>Midterm Deadline:</strong> {{ course.midterm_deadline }}</p>
+                <p><strong>Final Deadline:</strong> {{ course.final_deadline }}</p>
+                <p><strong>Course Length:</strong> {{ course.course_length }} weeks</p>
+                {% if is_enrolled and course.materials %}
+                <p><strong>Course Reading:</strong> <a href="{{ course.materials.url }}" target="_blank">{{ course.materials.name|slice:"17:"  }}</a></p>
+                {% elif not is_enrolled %}
+                <p class="alert alert-warning">You need to enroll in this course to access the course materials.</p>
+                {% endif %}
+            </div>
+
+            <!-- Course Teacher -->
+            <div class="mb-5">
+                <h2>Course Teacher</h2>
+                <p><strong>Name:</strong> {{ course.teacher.user.get_full_name }}</p>
+                <p><strong>Email:</strong> {{ course.teacher.user.email }}</p>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="mb-5">
+                <h2>Feedback</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="feedback" class="form-label">Please take one minute to leave us your feedback:</label>
+                        <textarea id="feedback" name="feedback" class="form-control" rows="4" placeholder="Enter here..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4 col-sm-12">
+            <!-- Enrollment Status -->
+            <div class="mb-5">
+                {% if is_enrolled %}
+                    <p class="alert alert-success">You are enrolled in this course.</p>
+                {% else %}
+                    <p class="alert alert-warning">You are not enrolled in this course.</p>
+                    <form method="post" action="{% url 'course_home' course.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" name="enroll" class="btn btn-primary">Enroll now</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- Link to Chat room -->
+            <div class="mb-5">
+                <a class="btn btn-info" href="{% url 'room' course.course_name %}">Chat Room</a>
+            </div>
+
+            <!-- Previous Feedback -->
+            <div class="mb-5">
+                <h2>What you said</h2>
+                <ul class="list-group">
+                    {% for feedback in feedbacks %}
+                        <li class="list-group-item">{{ feedback.feedback_text }}</li>
+                    {% empty %}
+                        <li class="list-group-item">No feedback available</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Enrolled Students -->
+            <div>
+                <h2>Enrolled Students</h2>
+                <ul class="list-group">
+                    {% for student in enrolled_students %}
+                        <li class="list-group-item">{{ student.user.get_full_name }}</li>
+                    {% empty %}
+                        <li class="list-group-item">No students enrolled</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

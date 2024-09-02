@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 static crispy_forms_tags %}
+{% block title %}Teacher Home{% endblock %}
+
+{% block navbar_items %}
+<!-- Notifications -->
+    <div id="notification-container" style="display: none;">
+        <div id="notification-message"></div>
+    </div>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'teacher_home' teacher.pk %}">{{ teacher.user.get_full_name }}</a>
+    </li>
+       <li class="nav-item">
+        <form method="post" action="{% url 'logout' %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="nav-link btn btn-link">Logout</button>
+        </form>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar for Teacher Info -->
+        <div class="col-md-4 col-sm-12 mb-5">
+            <h2>Teacher Information</h2>
+            {% if teacher.profile_picture %}
+                <img src="{{ teacher.profile_picture.url }}" alt="Current Profile Picture" class="img-thumbnail mb-3" style="max-width: 200px;">
+            {% else %}
+                <p>No profile picture available.</p>
+            {% endif %}
+            <p><strong>Name:</strong> {{ teacher.user.get_full_name }}</p>
+            <p><strong>Email:</strong> {{ teacher.user.email }}</p>
+            <p><strong>Address:</strong></p>
+            <p>{{ teacher.user.address.street_address }}</p>
+            <p>{{ teacher.user.address.city }}, {{ teacher.user.address.country }}</p>
+            <p>{{ teacher.user.address.post_code }}</p>
+            <h3>Update your information</h3>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_profile_picture" class="form-label">Change Picture:</label>
+                    <input type="file" name="profile_picture" accept="image/*" id="id_profile_picture" class="form-control-file">
+                </div>    
+                <div class="mb-3">
+                    <label for="id_street_address" class="form-label">Street Address:</label>
+                    <input type="text" name="street_address" id="id_street_address" class="form-control" placeholder="Enter the street address">
+                </div>
+                <div class="mb-3">
+                    <label for="id_post_code" class="form-label">Post Code:</label>
+                    <input type="text" name="post_code" id="id_post_code" class="form-control" placeholder="Enter the post code">
+                </div>
+                <div class="mb-3">
+                    <label for="id_city" class="form-label">City:</label>
+                    <input type="text" name="city" id="id_city" class="form-control" placeholder="Enter the city">
+                </div>
+                <div class="mb-3">
+                    <label for="id_country" class="form-label">Country:</label>
+                    <input type="text" name="country" id="id_country" class="form-control" placeholder="Enter the country">
+                </div>   
+                <button type="submit" class="btn btn-secondary">Update Info</button>
+            </form>
+        </div>
+        <div class="col-md-8 col-sm-12">
+            <h2>Search</h2>
+            <form method="get" action="{% url 'teacher_home' teacher.pk %}">
+                {% csrf_token %}
+                <!-- Search bar -->
+                <div class="input-group mb-3">
+                    <input type="text" name="q" class="form-control" placeholder="Search by name or email">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+
+            {% if query %}
+                <h2>Search results for "{{ query }}"</h2>
+                <!-- List of courses -->
+                <ul class="list-group">
+                    {% for user in results %}
+                        <li class="list-group-item">
+                            {{ user.get_full_name }} ({{ user.email }})
+                            {% if user.user_type == 'student' %}
+                                - Student
+                            {% elif user.user_type == 'teacher' %}
+                                - Teacher
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No results found.</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- Course details -->
+            <h2>List of courses</h2>
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <ul class="list-group">
+                        {% for course in courses %}
+                            <li class="list-group-item">
+                                <a href="#" onclick="showCourseDetails('{{ course.pk }}'); return false;">
+                                    {{ course.course_name }}
+                                </a>                      
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item">No courses available.</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'new_course' pk=teacher.pk%}" class="btn btn-primary mt-3">Add new course</a>
+                </div>
+
+                <div class="col-md-8 col-sm-12">
+                    {% for course in courses %}
+                        <div id="course-{{ course.pk }}" class="course-details">
+                            <h3>{{ course.course_name }}</h3>
+                            <p><strong>Start Date:</strong> {{ course.course_start_date }}</p>
+                            <p><strong>Course length:</strong> {{ course.course_length }} weeks</p>
+                            <p><strong>Midterm Deadline:</strong> {{ course.midterm_deadline }}</p>
+                            <p><strong>Final Deadline:</strong> {{ course.final_deadline }}</p>
+                            <p><strong>Enrolled Students:</strong> <span class="enrolled-student-count">{{ course.enrolled_student_count }}</span></p>
+                            {% if course.materials %}
+                                <p><strong>Course Reading:</strong> {{ course.materials.name|slice:"17:" }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Chat from the teacher side -->
+            <div class="chat-container">
+                <h2 id="chat-room-name"></h2>
+                <input type="hidden" id="course-names" value="{{ course_names }}">
+                {% include 'chat.html' %}
+     
+            </div>            
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'JS/chat.js' %}"></script>
+<script src="{% static 'JS/show_course.js' %}"></script>
+<script src="{% static 'JS/notifications.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EduVerse{% endblock %}</title>
+    {% load django_bootstrap5 static crispy_forms_tags %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %} 
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/stylesheet.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'index' %}">EduVerse</a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        {% block navbar_items %}
+                        <!-- User and logout -->
+                        {% endblock %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        {% block content %}
+        <!-- This is where the content from the child templates will be inserted -->
+        {% endblock %}
+        {% block extra_js %}
+        <!-- Default extra_js block content -->
+        {% endblock %}
+    </div>
+</body>
+</html>

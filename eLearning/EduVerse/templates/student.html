@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 static crispy_forms_tags %}
+{% block title %}Student Home{% endblock %}
+
+{% block navbar_items %}
+    {% if student %}
+    <!-- Notifications -->
+    <div id="notification-container" style="display: none;">
+        <div id="student-notification-message"></div>
+    </div>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'student_home' student.pk %}">{{ student.user.get_full_name }}</a>
+    </li>
+    {% endif %}
+    <li class="nav-item">
+        <form method="post" action="{% url 'logout' %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="nav-link btn btn-link">Logout</button>
+        </form>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Left Sidebar -->
+        <div class="col-md-4 col-sm-12 mb-4 sidebar" id="sidebar-left">
+            <!-- Student Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Student Details</h5>
+                </div>
+                <div class="card-body">
+                    {% if student.profile_picture %}
+                        <img src="{{ student.profile_picture.url }}" alt="Current Profile Picture" class="img-thumbnail mb-3" style="max-width: 200px;">
+                    {% else %}
+                        <p>No profile picture available.</p>
+                    {% endif %}
+                    <p class="card-text"><strong>Name:</strong> {{ student.user.get_full_name }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ student.user.email }}</p>
+                    <p class="card-text"><strong>Address:</strong> {{ student.user.address }}</p>
+                    <h3>Update your information</h3>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_profile_picture" class="form-label">Change Picture:</label>
+                            <input type="file" name="profile_picture" accept="image/*" id="id_profile_picture" class="form-control-file">
+                        </div>    
+                        <div class="mb-3">
+                            <label for="id_street_address" class="form-label">Street Address:</label>
+                            <input type="text" name="street_address" id="id_street_address" class="form-control" placeholder="Enter the street address">
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_post_code" class="form-label">Post Code:</label>
+                            <input type="text" name="post_code" id="id_post_code" class="form-control" placeholder="Enter the post code">
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_city" class="form-label">City:</label>
+                            <input type="text" name="city" id="id_city" class="form-control" placeholder="Enter the city">
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_country" class="form-label">Country:</label>
+                            <input type="text" name="country" id="id_country" class="form-control" placeholder="Enter the country">
+                        </div>   
+                        <button type="submit" class="btn btn-secondary">Update Info</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12 mb-4">
+            <!-- Courses Section -->
+            <div class="mb-5">
+                <h2 class="mb-3">Enrolled</h2>
+                <ul class="list-group">
+                    {% for course in enrolled_courses %}
+                    <li class="list-group-item" data-course-id="{{ course.pk }}">
+                            <a href="{% url 'course_home' course.pk %}">{{ course.course_name }}</a>
+                            <ul class="list-unstyled">
+                                <li>Midterm Deadline: {{ course.midterm_deadline }}</li>
+                                <li>Final Deadline: {{ course.final_deadline }}</li>
+                            </ul>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No courses enrolled</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Status Updates Section -->
+            <div class="mb-5">
+                <h2 class="mb-3">Updates</h2>
+                <ul class="list-group">
+                    {% for enrollment in enrollments %}
+                        <li class="list-group-item" data-course-id="{{ enrollment.course.pk }}">
+                            <strong>{{ enrollment.course.course_name }}</strong> - {{ enrollment.status_update }}
+                            {% if enrollment.feedback %}
+                                <p class="mt-2 mb-0">Feedback: {{ enrollment.feedback }}</p>
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No status updates</li>
+                    {% endfor %}
+                </ul>   
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="col-md-4 col-sm-12 mb-4 sidebar" id="sidebar-right">
+            <!-- Courses Available -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Courses Available</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for course in available_courses %}
+                            <li class="list-group-item">
+                                <a href="{% url 'course_home' course.pk %}">{{ course.course_name }}</a>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item">No courses available</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <!-- Update status-->
+            <div class="updateStatus">
+                <div class="status-header">
+                    <h5 class="status-title">Update your status</h5>
+                </div>
+                <form method="post" action=".">
+                    {% csrf_token %}
+                    <input type="text" name="status_update" placeholder="Enter a new status update" class="form-control mb-2">
+                    <select name="course" class="form-control mb-2">
+                        {% for course in enrolled_courses %}
+                            <option value="{{ course.pk }}">{{ course.course_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-secondary">Post Update</button>
+                </form>
+            </div> 
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'JS/notifications.js' %}"></script>
+<script src="{% static 'JS/remove_student.js' %}"></script>
+{% endblock %}

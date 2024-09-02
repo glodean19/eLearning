@@ -1,0 +1,12 @@
+<!-- common to student and teacher templates-->
+<textarea id="chat-log" readonly></textarea><br>
+<input id="chat-message-input" type="text" placeholder="Type a message..."><br>
+<div class="button-container">
+    <input id="chat-message-submit" type="button" value="Send">
+    <button id="exit-chat-button" class="btn btn-secondary">Exit Chat</button>
+</div>
+<input type="hidden" id="reference" value="{{ reference }}">
+<input type="hidden" id="author" value="{{ author }}">
+<input type="hidden" id="user-type" value="{{ user_type }}">
+<input type="hidden" id="teacher-pk" value="{{ teacher.pk }}">
+<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
