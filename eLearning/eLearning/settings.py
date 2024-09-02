@@ -159,7 +159,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG' : {
-            'hosts' : [('127.0.0.1', 6379)]
+            'hosts' : [('34.196.116.115', 6379)]
         },
     }
 }
@@ -177,17 +177,20 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://34.196.116.115:8000",
 ]
 
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8000',
     'http://localhost',
     'http://127.0.0.1',
+    'http://34.196.116.115:8000',
 )
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'http://34.196.116.115:8000',
 ]
 
 # Logging configuration
